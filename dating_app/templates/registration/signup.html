@@ -1,0 +1,20 @@
+
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block content %}
+
+<html>
+<head>
+    <title>Регестарция в Сайт для знакомст абсолютно не для фембоев</title>
+</head>
+<body>
+    <h2>Регестрация</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Зарегестрироваться</button>
+    </form>
+</body>
+</html>
+{% endblock %}

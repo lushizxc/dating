@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Кто лайкнул тебя тупого персона фага</h1>
+{% for user in users %}
+<br>{{ user.username }}
+<br>{{user.bio}}
+<br>{{user.get_gender_display}}
+<br>{{user.date_of_birth}}
+{% if user.avatar %}
+<img src="{{ user.avatar.url}}" alt="User Photo" width="200">
+{% else %}
+<div style="width: 200px; height: 200px; background: #ccc; display: flex; align-items: center; justify-content: center;">
+        <span>Нет аватарки</span>
+    </div>
+{% endif %}
+{% empty %}
+<p>У вас нет метчей</p>
+{% endfor %}
+{% endblock %}

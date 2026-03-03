@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+{% for user in users %}
+{{ user.username }}
+{{user.bio}}
+{{user.get_gender_display}}
+{{user.date_of_birth}}
+<form method="POST" action="{% url 'accounts:match' user.id %}" >
+    {% csrf_token %} <button name="action" value="like" type="submit" style="cursor: pointer; background-color: #ff4b4b; color: white; border: none; padding: 10px 20px; border-radius: 20px;">
+        Лайк
+    </button>
+</form>
+<form method="POST" action="{% url 'accounts:match' user.id %}" >
+    {% csrf_token %} <button name="action" value="skip" type="submit" style="cursor: pointer; background-color: #ff4b4b; color: white; border: none; padding: 10px 20px; border-radius: 20px;">
+        Скип
+    </button>
+</form>
+{% if user.avatar %}
+
+<img src="{{ user.avatar.url}}" alt="User Photo" width="200">
+{% else %}
+<div style="width: 200px; height: 200px; background: #ccc; display: flex; align-items: center; justify-content: center;">
+        <span>Нет аватарки</span>
+    </div>
+
+{% endif %}
+{% endfor %}
+{% endblock %}
