@@ -3,7 +3,9 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.views.generic import CreateView, ListView, View, UpdateView
 from django.urls import reverse_lazy
 from .forms import SignUpForm, UserUpdateForm
-from .models import User,Match
+from .models import User,Match,Message
+from django.contrib import messages
+from django.db.models import Q
 
 class SignUpView(CreateView):
     form_class = SignUpForm
@@ -11,16 +13,21 @@ class SignUpView(CreateView):
     model = User
     success_url = reverse_lazy('accounts:login')
 
-class FeedView(ListView):
+class FeedView(LoginRequiredMixin,ListView):
     template_name = 'feed/feedlist.html'
     model = User
     context_object_name = 'users'
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
+            user_pref = self.request.user.interested_in
             queryset = User.objects.all()
             swiped_users = Match.objects.filter(user_from = self.request.user).values_list('user_to',flat=True)
-            queryset = queryset.exclude(id__in = swiped_users).exclude(id = self.request.user.id)
+            queryset = queryset.exclude(id__in = swiped_users).exclude(id = self.request.user.id).filter(city = self.request.user.city)
+
+            if user_pref != "A":
+                queryset = queryset.filter(gender = user_pref)
+
             return queryset
         else:
             return User.objects.all()
@@ -35,7 +42,13 @@ class MatchView(LoginRequiredMixin,View):
         if action == 'like':
             current_status = Match.Status.LIKE
             has_liked_back = Match.objects.filter(user_from=target,user_to = self.request.user,status = Match.Status.LIKE).exists()
-        Match.objects.update_or_create(user_from = self.request.user,user_to = target,defaults ={'status':current_status})
+
+            if has_liked_back:
+                messages.success(request, f'У тебя мэтч с {target.first_name} {target.last_name}!')
+
+        Match.objects.update_or_create(user_from=self.request.user, user_to=target,defaults={'status': current_status})
+
+
 
 
         return redirect('accounts:home')
@@ -63,3 +76,13 @@ class UserUpdateView(LoginRequiredMixin,UpdateView):
     def get_object(self):
         return self.request.user
 
+def chat(request,user_id):
+    user = User.objects.get(id = user_id)
+    if request.method == 'POST':
+        image = request.FILES.get('image')
+        Message.objects.create(text = request.POST.get('text'),receiver = user,sender = request.user,image = image)
+        return redirect('accounts:chat',user_id)
+
+    chat_messages = Message.objects.filter(Q(receiver = user_id,sender = request.user) | Q(sender = user_id,receiver = request.user))
+    return render(request,'accounts/chat.html', context = {'chat_messages':chat_messages,
+                                                  'user':user,})

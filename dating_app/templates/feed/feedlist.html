@@ -1,28 +1,42 @@
 {% extends 'base.html' %}
+
 {% block content %}
-{% for user in users %}
-{{ user.username }}
-{{user.bio}}
-{{user.get_gender_display}}
-{{user.date_of_birth}}
-<form method="POST" action="{% url 'accounts:match' user.id %}" >
-    {% csrf_token %} <button name="action" value="like" type="submit" style="cursor: pointer; background-color: #ff4b4b; color: white; border: none; padding: 10px 20px; border-radius: 20px;">
-        Лайк
-    </button>
-</form>
-<form method="POST" action="{% url 'accounts:match' user.id %}" >
-    {% csrf_token %} <button name="action" value="skip" type="submit" style="cursor: pointer; background-color: #ff4b4b; color: white; border: none; padding: 10px 20px; border-radius: 20px;">
-        Скип
-    </button>
-</form>
-{% if user.avatar %}
+<div class="row justify-content-center">
+    {% for user in users %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center shadow">
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" class="card-img-top" alt="{{ user.username }}" style="height: 300px; object-fit: cover;">
+            {% else %}
+                <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <span class="text-white-50">Нет фото</span>
+                </div>
+            {% endif %}
 
-<img src="{{ user.avatar.url}}" alt="User Photo" width="200">
-{% else %}
-<div style="width: 200px; height: 200px; background: #ccc; display: flex; align-items: center; justify-content: center;">
-        <span>Нет аватарки</span>
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ user.first_name }} {{ user.last_name }}</h5>
+                <p class="card-text small">{{ user.bio|truncatechars:100 }}</p>
+                <p class="card-text">Возраст: {{ user.age }}</p>
+                <p class="card-text ">{{ user.city }}</p>
+
+
+            </div>
+
+            <div class="card-footer d-flex justify-content-around bg-transparent border-0 pb-3">
+                <form action="{% url 'accounts:match' user.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="skip">
+                    <button type="submit" class="btn btn-outline-secondary btn-lg">✖</button>
+                </form>
+
+                <form action="{% url 'accounts:match' user.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="like">
+                    <button type="submit" class="btn btn-danger btn-lg">❤</button>
+                </form>
+            </div>
+        </div>
     </div>
-
-{% endif %}
-{% endfor %}
+    {% endfor %}
+</div>
 {% endblock %}

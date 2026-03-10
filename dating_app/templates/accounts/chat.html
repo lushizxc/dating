@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card bg-black text-white border-danger shadow-lg" style="border-width: 2px;">
+        <div class="card-header border-danger d-flex align-items-center bg-dark">
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" class="rounded-circle me-3 border border-danger" style="width: 55px; height: 55px; object-fit: cover;">
+            {% endif %}
+            <div>
+                <h4 class="mb-0 text-danger fw-bold" style="letter-spacing: 1px;"> {{ user.username|upper }}</h4>
+                <small class="text-muted">Статус: В контакте</small>
+            </div>
+        </div>
+
+        <div class="card-body chat-container" style="height: 500px; overflow-y: auto; background: #0a0a0a; padding: 1.5rem;">
+            {% for msg in chat_messages %}
+                <div class="d-flex {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %} mb-4">
+                    <div class="p-3 shadow-sm message-box {% if msg.sender == request.user %}bg-danger text-white{% else %}bg-secondary text-light{% endif %}"
+                         style="max-width: 75%; position: relative; clip-path: polygon(0 5%, 100% 0, 98% 95%, 2% 100%);">
+
+                        {% if msg.image %}
+                            <div class="mb-2">
+                                <a href="{{ msg.image.url }}" target="_blank">
+                                    <img src="{{ msg.image.url }}" class="img-fluid rounded border border-light" style="max-height: 250px; width: 100%; object-fit: cover;">
+                                </a>
+                            </div>
+                        {% endif %}
+
+                        {% if msg.text %}
+                            <p class="mb-1 fw-bold">{{ msg.text }}</p>
+                        {% endif %}
+
+                        <div class="small mt-1 opacity-75 {% if msg.sender == request.user %}text-white{% else %}text-info{% endif %}" style="font-size: 0.65rem;">
+                            {{ msg.created_at|date:"H:i" }}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center mt-5">
+                    <p class="text-danger fw-bold" style="font-size: 1.2rem;"></p>
+                    <img src="https://i.imgur.com/your-persona-calling-card-placeholder.png" style="opacity: 0.3; width: 150px;">
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="card-footer border-danger bg-dark p-3">
+            <form method="POST" class="row g-2 align-items-center" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="col-auto">
+                    <label class="btn btn-outline-danger shadow-none" >
+                        <i class="bi bi-camera"></i> 📷
+                        <input type="file" name="image">
+                    </label>
+                </div>
+
+                <div class="col">
+                    <input type="text" name="text" class="form-control bg-black text-white border-danger shadow-none"
+                           placeholder="Напиши что-нибудь..." style="border-radius: 0;">
+                </div>
+
+                <div class="col-auto">
+                    <button type="submit" name="submit_btn" class="btn btn-danger fw-bold px-4" style="border-radius: 0;">
+                        Отправить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

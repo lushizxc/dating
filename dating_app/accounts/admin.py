@@ -1,14 +1,15 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User,Match
+from .models import User,Match,Message
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
 
     fieldsets = UserAdmin.fieldsets + (
         ('Мои дополнительные поля', {  # Название блока
-            'fields': ('avatar', 'bio', 'city', 'date_of_birth', 'gender')
+            'fields': ('avatar', 'bio', 'city', 'date_of_birth', 'gender','interested_in')
         }),
     )
 
 admin.site.register(Match)
+admin.site.register(Message)
