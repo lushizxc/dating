@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.dispatch import receiver
 from django.shortcuts import render,redirect,get_object_or_404
 from django.views.generic import CreateView, ListView, View, UpdateView
 from django.urls import reverse_lazy
@@ -6,6 +7,8 @@ from .forms import SignUpForm, UserUpdateForm
 from .models import User,Match,Message
 from django.contrib import messages
 from django.db.models import Q
+from datetime import timedelta
+from django.utils import timezone
 
 class SignUpView(CreateView):
     form_class = SignUpForm
@@ -79,6 +82,13 @@ class UserUpdateView(LoginRequiredMixin,UpdateView):
 def chat(request,user_id):
     user = User.objects.get(id = user_id)
     if request.method == 'POST':
+        try:
+            last_msg = Message.objects.filter(sender = request.user,receiver = user).latest('created_at')
+        except Message.DoesNotExist:
+            last_msg = None
+        to_check = request.POST.get('text')
+        if last_msg and last_msg.text == to_check and (timezone.now() - last_msg.created_at).total_seconds() < 3:
+            return redirect('accounts:chat', user_id)
         image = request.FILES.get('image')
         Message.objects.create(text = request.POST.get('text'),receiver = user,sender = request.user,image = image)
         return redirect('accounts:chat',user_id)

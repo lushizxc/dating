@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import ForeignKey
 from datetime import date
+from django.utils import timezone
+from datetime import timedelta
+
+
 
 class User(AbstractUser):
     class Interstedin(models.TextChoices):
@@ -19,6 +23,7 @@ class User(AbstractUser):
     city = models.CharField(max_length=168,blank=False)
     date_of_birth = models.DateField(blank=False,null=True)
     interested_in = models.CharField(max_length=1,choices=Interstedin.choices,default=Interstedin.ALL)
+    last_seen = models.DateTimeField(blank = True,null = True)
 
     REQUIRED_FIELDS = ['city','date_of_birth']
 
@@ -33,6 +38,13 @@ class User(AbstractUser):
             age -= 1
 
         return age
+
+    @property
+    def is_online(self):
+        if self.last_seen:
+            return timezone.now() < self.last_seen + timedelta(minutes=5)
+        return False
+
 
     def __str__(self):
         return self.username
@@ -65,3 +77,10 @@ class Message(models.Model):
 
     def __str__(self):
         return f'{self.sender} -> {self.receiver}'
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(User,on_delete=models.CASCADE,related_name='notification_received')
+    sender = models.ForeignKey(User,on_delete=models.CASCADE,related_name='notification_sent')
+    text = models.TextField(null = True,blank = True)
+    is_read = models.BooleanField(default = False)
+    created_at = models.DateTimeField(auto_now_add=True)

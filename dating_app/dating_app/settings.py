@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-nv6rj@6=^#+n4%ank@4^k7zt_)+x1au(y_h(u&hm3(*j+pf#kn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.onrender.com']
+ALLOWED_HOSTS = ['.onrender.com','127.0.0.1']
 
 
 # Application definition
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts',
+    'accounts.apps.AccountsConfig',
     'crispy_forms',
     'crispy_bootstrap5',
 ]
@@ -52,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'accounts.middleware.UpdateLastSeenMiddleware',
 ]
 
 ROOT_URLCONF = 'dating_app.urls'
@@ -109,7 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Warsaw'
+USE_TZ = True
+
 
 USE_I18N = True
 

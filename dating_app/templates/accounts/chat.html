@@ -9,8 +9,12 @@
             {% endif %}
             <div>
                 <h4 class="mb-0 text-danger fw-bold" style="letter-spacing: 1px;"> {{ user.username|upper }}</h4>
-                <small class="text-muted">Статус: В контакте</small>
-            </div>
+               {% if user.is_online %}
+            <span style="color: #00ff00;">●</span> Онлайн
+        {% else %}
+            Был(а) в сети: {{ user.last_seen|timesince }} назад
+        {% endif %}
+                    </div>
         </div>
 
         <div class="card-body chat-container" style="height: 500px; overflow-y: auto; background: #0a0a0a; padding: 1.5rem;">
@@ -61,7 +65,7 @@
                 </div>
 
                 <div class="col-auto">
-                    <button type="submit" name="submit_btn" class="btn btn-danger fw-bold px-4" style="border-radius: 0;">
+                    <button type="submit" name="submit_btn" class="btn btn-danger fw-bold px-4" style="border-radius: 0;" >
                         Отправить
                     </button>
                 </div>
