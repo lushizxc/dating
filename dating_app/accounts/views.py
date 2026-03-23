@@ -1,14 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.dispatch import receiver
+from django.http import JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.views.generic import CreateView, ListView, View, UpdateView
 from django.urls import reverse_lazy
 from .forms import SignUpForm, UserUpdateForm
-from .models import User,Match,Message
+from .models import User,Match,Message,Notification
 from django.contrib import messages
 from django.db.models import Q
 from datetime import timedelta
 from django.utils import timezone
+
+
 
 class SignUpView(CreateView):
     form_class = SignUpForm
@@ -62,6 +65,11 @@ class MatchListView(ListView):
     template_name = 'matches/match_list.html'
     context_object_name = 'users'
 
+    def get(self, request, *args, **kwargs):
+        notification = Notification.objects.filter(recipient = self.request.user,is_read = False).update(is_read = True)
+
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         liked = Match.objects.filter(user_from = self.request.user.id).values_list('user_to',flat=True)
         liked_me = Match.objects.filter(user_to = self.request.user.id).values_list('user_from',flat=True)
@@ -90,8 +98,14 @@ def chat(request,user_id):
         if last_msg and last_msg.text == to_check and (timezone.now() - last_msg.created_at).total_seconds() < 3:
             return redirect('accounts:chat', user_id)
         image = request.FILES.get('image')
-        Message.objects.create(text = request.POST.get('text'),receiver = user,sender = request.user,image = image)
-        return redirect('accounts:chat',user_id)
+        new_msg = Message.objects.create(text = request.POST.get('text'),receiver = user,sender = request.user,image = image)
+        data = {
+            'text': new_msg.text,
+            'sender': new_msg.sender.username,
+            'created_at': new_msg.created_at.strftime("%H:%M"),
+            'image_url':new_msg.image.url if new_msg.image.url else None
+        }
+        return JsonResponse(data)
 
     chat_messages = Message.objects.filter(Q(receiver = user_id,sender = request.user) | Q(sender = user_id,receiver = request.user))
     return render(request,'accounts/chat.html', context = {'chat_messages':chat_messages,

@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.notification'
             ],
         },
     },
@@ -80,7 +81,7 @@ WSGI_APPLICATION = 'dating_app.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default="postgresql://dating_db_ur6b_user:RRPo3vCqSGiBeXIjhuonzvsjncRJScnb@dpg-d6pgtth5pdvs738j8lug-a.frankfurt-postgres.render.com/dating_db_ur6b",
         conn_max_age=600,
         conn_health_checks=True,
     )

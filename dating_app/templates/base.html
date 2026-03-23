@@ -22,8 +22,10 @@
               <div class="navbar-nav ms-auto">
             {% if user.is_authenticated %}
                 <a class="nav-link" href="{% url 'accounts:home' %}">Лента</a>
-                <a class="nav-link" href="/matches/">Мэтчи</a>
-               <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
+                <a class="nav-link" href="/matches/"> {%if unread_count > 0 %} <span class="badge rounded-pill bg-danger" >🔴 {{unread_count}}</span>  {% endif %} Мэтчи</a>
+
+                  <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
+
                        {% csrf_token %}
                        <button type="submit" class="btn btn-link nav-link shadow-none"
             style="display:inline; cursor:pointer; text-decoration:none;">
