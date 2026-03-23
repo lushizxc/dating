@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.dispatch import receiver
 from django.http import JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
+from django.utils.functional import new_method_proxy
 from django.views.generic import CreateView, ListView, View, UpdateView
 from django.urls import reverse_lazy
 from .forms import SignUpForm, UserUpdateForm
@@ -87,26 +88,59 @@ class UserUpdateView(LoginRequiredMixin,UpdateView):
     def get_object(self):
         return self.request.user
 
-def chat(request,user_id):
-    user = User.objects.get(id = user_id)
+
+def chat(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
     if request.method == 'POST':
+        text_content = request.POST.get('text')
+
         try:
-            last_msg = Message.objects.filter(sender = request.user,receiver = user).latest('created_at')
+            last_msg = Message.objects.filter(sender=request.user, receiver=user).latest('created_at')
+            if last_msg.text == text_content and (timezone.now() - last_msg.created_at).total_seconds() < 3:
+                return JsonResponse({'error': 'message_spam', 'message': 'Слишком частая отправка'}, status=400)
         except Message.DoesNotExist:
-            last_msg = None
-        to_check = request.POST.get('text')
-        if last_msg and last_msg.text == to_check and (timezone.now() - last_msg.created_at).total_seconds() < 3:
-            return redirect('accounts:chat', user_id)
+            pass
+
         image = request.FILES.get('image')
-        new_msg = Message.objects.create(text = request.POST.get('text'),receiver = user,sender = request.user,image = image)
-        data = {
+        new_msg = Message.objects.create(
+            text=text_content,
+            receiver=user,
+            sender=request.user,
+            image=image
+        )
+
+        return JsonResponse({
+            'id': new_msg.id,
             'text': new_msg.text,
             'sender': new_msg.sender.username,
             'created_at': new_msg.created_at.strftime("%H:%M"),
-            'image_url':new_msg.image.url if new_msg.image.url else None
-        }
-        return JsonResponse(data)
+            'image_url': new_msg.image.url if new_msg.image and hasattr(new_msg.image, 'url') else None
+        })
 
-    chat_messages = Message.objects.filter(Q(receiver = user_id,sender = request.user) | Q(sender = user_id,receiver = request.user))
-    return render(request,'accounts/chat.html', context = {'chat_messages':chat_messages,
-                                                  'user':user,})
+    last_id = request.GET.get('last_msg_id')
+    if last_id:
+        new_msgs = Message.objects.filter(
+            Q(receiver=user_id, sender=request.user) | Q(sender=user_id, receiver=request.user),
+            id__gt=last_id
+        ).order_by('created_at')
+
+        message_list = []
+        for m in new_msgs:
+            message_list.append({
+                'id': m.id,
+                'text': m.text,
+                'sender': m.sender.username,
+                'created_at': m.created_at.strftime("%H:%M"),
+                'image_url': m.image.url if m.image and hasattr(m.image, 'url') else None
+            })
+        return JsonResponse({'messages': message_list})
+
+    chat_messages = Message.objects.filter(
+        Q(receiver=user_id, sender=request.user) | Q(sender=user_id, receiver=request.user)
+    ).order_by('created_at')
+
+    return render(request, 'accounts/chat.html', {
+        'user': user,
+        'chat_messages': chat_messages
+    })

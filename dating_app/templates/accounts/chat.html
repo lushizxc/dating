@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
+
+
 
 {% block content %}
+<script src="{% static 'js/chat.js' %}"></script>
+
 <div class="container mt-4">
     <div class="card bg-black text-white border-danger shadow-lg" style="border-width: 2px;">
         <div class="card-header border-danger d-flex align-items-center bg-dark">
@@ -9,16 +14,22 @@
             {% endif %}
             <div>
                 <h4 class="mb-0 text-danger fw-bold" style="letter-spacing: 1px;"> {{ user.username|upper }}</h4>
-               {% if user.is_online %}
-            <span style="color: #00ff00;">●</span> Онлайн
-        {% else %}
-            Был(а) в сети: {{ user.last_seen|timesince }} назад
-        {% endif %}
-                    </div>
+                {% if user.is_online %}
+                    <span style="color: #00ff00;">●</span> Онлайн
+                {% else %}
+                    Был(а) в сети: {{ user.last_seen|timesince }} назад
+                {% endif %}
+            </div>
         </div>
 
-        <div class="card-body chat-container" style="height: 500px; overflow-y: auto; background: #0a0a0a; padding: 1.5rem;">
+        <div id="chat-window"
+             class="card-body chat-container"
+             data-current-user="{{ request.user.username }}"
+             data-chat-url="{% url 'accounts:chat' user.id %}"
+             style="height: 500px; overflow-y: auto; background: #0a0a0a; padding: 1.5rem;">
+
             {% for msg in chat_messages %}
+            <div class="message-box" data-id="{{ msg.id }}">
                 <div class="d-flex {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %} mb-4">
                     <div class="p-3 shadow-sm message-box {% if msg.sender == request.user %}bg-danger text-white{% else %}bg-secondary text-light{% endif %}"
                          style="max-width: 75%; position: relative; clip-path: polygon(0 5%, 100% 0, 98% 95%, 2% 100%);">
@@ -40,32 +51,30 @@
                         </div>
                     </div>
                 </div>
+            </div>
             {% empty %}
                 <div class="text-center mt-5">
-                    <p class="text-danger fw-bold" style="font-size: 1.2rem;"></p>
+                    <p class="text-danger fw-bold" style="font-size: 1.2rem;">Сообщений пока нет. Начни общение первым!</p>
                     <img src="https://i.imgur.com/your-persona-calling-card-placeholder.png" style="opacity: 0.3; width: 150px;">
                 </div>
             {% endfor %}
         </div>
 
         <div class="card-footer border-danger bg-dark p-3">
-            <form method="POST" class="row g-2 align-items-center" enctype="multipart/form-data">
+            <form id="chat-form" method="POST" class="row g-2 align-items-center" enctype="multipart/form-data">
                 {% csrf_token %}
-
                 <div class="col-auto">
-                    <label class="btn btn-outline-danger shadow-none" >
+                    <label class="btn btn-outline-danger shadow-none">
                         <i class="bi bi-camera"></i> 📷
-                        <input type="file" name="image">
+                        <input type="file" name="image" hidden>
                     </label>
                 </div>
-
                 <div class="col">
                     <input type="text" name="text" class="form-control bg-black text-white border-danger shadow-none"
-                           placeholder="Напиши что-нибудь..." style="border-radius: 0;">
+                           placeholder="Напиши что-нибудь..." style="border-radius: 0;" autocomplete="off">
                 </div>
-
                 <div class="col-auto">
-                    <button type="submit" name="submit_btn" class="btn btn-danger fw-bold px-4" style="border-radius: 0;" >
+                    <button type="submit" class="btn btn-danger fw-bold px-4" style="border-radius: 0;">
                         Отправить
                     </button>
                 </div>
@@ -73,5 +82,5 @@
         </div>
     </div>
 </div>
-
 {% endblock %}
+
