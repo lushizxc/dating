@@ -26,14 +26,14 @@
                     </ul>
 
                     <a href="{% url 'accounts:chat' user.id %}" class="btn btn-danger w-100 mt-3 fw-bold">
-                        Вступить в контакт
+                        Написать
                     </a>
                 </div>
             </div>
         </div>
     {% empty %}
         <div class="col-12 text-center mt-5">
-            <p class="text-muted fs-4">У вас пока нет мэтчей. Спи спи, соня...</p>
+            <p class="text-danger fs-4">У вас пока нет мэтчей. Спи спи, соня...</p>
         </div>
     {% endfor %}
     </div>

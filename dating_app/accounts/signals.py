@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Notification, Match
+from messenger.models import Notification
+from matches.models import Match
 
 print("РАЦИЯ ВКЛЮЧЕНА, СИГНАЛЫ ЗАГРУЖЕНЫ!")
 

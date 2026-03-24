@@ -1,4 +1,4 @@
-from .models import Notification
+from messenger.models import Notification
 
 def notification(request):
     count = 0

@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'crispy_forms',
     'crispy_bootstrap5',
+    'matches',
+    'messenger',
 ]
 
 MIDDLEWARE = [
@@ -81,7 +83,7 @@ WSGI_APPLICATION = 'dating_app.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default="postgresql://dating_db_ur6b_user:RRPo3vCqSGiBeXIjhuonzvsjncRJScnb@dpg-d6pgtth5pdvs738j8lug-a.frankfurt-postgres.render.com/dating_db_ur6b",
+        default="postgresql://dating_db_eu93_user:pPQkZ5MYe0HBimHe5kg91UOQzANT1ztU@dpg-d71ahrvkijhs73cgjgag-a.frankfurt-postgres.render.com/dating_db_eu93",
         conn_max_age=600,
         conn_health_checks=True,
     )
@@ -126,7 +128,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 AUTH_USER_MODEL = 'accounts.User'
 LOGIN_REDIRECT_URL = '/'

@@ -12,6 +12,13 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ['first_name','last_name','username','city','date_of_birth','avatar','gender','bio','interested_in']
 
+        widgets = {
+            'city': forms.Select(attrs={
+                'class': 'form-select bg-dark text-light border-danger'
+            }),
+        }
+
+
 
 class UserUpdateForm(ModelForm):
 
@@ -21,4 +28,6 @@ class UserUpdateForm(ModelForm):
 
         widgets = {
             'avatar': forms.FileInput(),
-        }
+            'city': forms.Select(attrs={
+                'class': 'form-select bg-dark text-light border-danger'
+        })}

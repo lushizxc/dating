@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User,Match,Message,Notification
+from .models import User,City
+from matches.models import Match
+from messenger.models import Message,Notification
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
@@ -14,3 +16,4 @@ class CustomUserAdmin(UserAdmin):
 admin.site.register(Match)
 admin.site.register(Message)
 admin.site.register(Notification)
+admin.site.register(City)
