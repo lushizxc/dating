@@ -14,7 +14,7 @@
                     <span style="color: #00ff00;">●</span> Онлайн
                 {% else %}
                     <span class="small opacity-75">Был(а) в сети: {{ user.last_seen|timesince }} назад</span>
-                   <form action="{% url 'accounts:unmatch' user.id %}" method="POST" style="display:inline;">
+                   <form action="{% url 'matches:unmatch' user.id %}" method="POST" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit"
                             class="btn btn-link text-danger p-0 m-0"
@@ -30,7 +30,7 @@
         <div id="chat-window"
              class="card-body chat-container"
              data-current-user="{{ request.user.username }}"
-             data-chat-url="{% url 'accounts:chat' user.id %}"
+             data-chat-url="{% url 'messenger:chat' user.id %}"
              style="height: 500px; overflow-y: auto; background: #0a0a0a; padding: 1.5rem;">
 
             {% for msg in chat_messages %}

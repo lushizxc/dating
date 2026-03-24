@@ -26,7 +26,7 @@
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
     background-color: #d00000 !important;
-    color: #fff !important;
+    color: #fff !important;accounts\login.html
 }
         </style>
             <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
@@ -36,13 +36,35 @@
 
         <nav class="navbar navbar-expand-lg navbar-dark mb-4">
             <div class="container">
-                            <a class="navbar-brand fw-bold" href="{% url 'accounts:home' %}">Phantom Инцелы Dating</a>
-
+                            <a class="navbar-brand fw-bold" href="{% url 'matches:home' %}">Phantom Инцелы Dating</a>
                   <div class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
-                    <a class="nav-link" href="{% url 'accounts:home' %}">Лента</a>
-                    <a class="nav-link" href="/matches/"> {%if unread_count > 0 %} <span class="badge rounded-pill bg-danger" >🔴 {{unread_count}}</span>  {% endif %} Мэтчи</a>
-
+<li class="nav-item dropdown me-3">
+    <a class="nav-link position-relative dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="fs-5">🔔</span>
+        {% if unread_notifications_count %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; border: 1px solid white;">
+                {{ unread_notifications_count }}
+            </span>
+        {% endif %}
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end shadow-lg py-0" aria-labelledby="notifDropdown" style="width: 320px; background: #121212; border: 2px solid #d32f2f; border-radius: 0;">
+        <li><h6 class="dropdown-header text-white bg-danger py-2">CALLING CARDS</h6></li>
+        <div class="notif-scroll" style="max-height: 350px; overflow-y: auto;">
+            {% for notif in recent_notifications %}
+                <li class="border-bottom border-secondary">
+                    <div class="dropdown-item py-3 {% if not notif.is_read %}bg-dark text-white fw-bold{% else %}text-secondary{% endif %}" style="white-space: normal;">
+                        <p class="mb-0" style="line-height: 1.2;">{{ notif.text }}</p>
+                        <small class="text-danger mt-1 d-block">{{ notif.created_at|date:"H:i" }}</small>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="p-4 text-center text-muted italic">Пока никто не украл твоё сердце...</li>
+            {% endfor %}
+        </div>
+        <li><a class="dropdown-item text-center py-2 bg-dark text-danger small" href="{% url 'matches:matches' %}">ПОСМОТРЕТЬ ВСЕ МЭТЧИ</a></li>
+    </ul>
+</li>
                       <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
 
                            {% csrf_token %}

@@ -17,7 +17,7 @@ from messenger.models import Message,Notification
 
 class SignUpView(CreateView):
     form_class = SignUpForm
-    template_name = 'registration/signup.html'
+    template_name = 'accounts/signup.html'
     model = User
     success_url = reverse_lazy('accounts:login')
 
@@ -25,7 +25,7 @@ class SignUpView(CreateView):
 class UserUpdateView(LoginRequiredMixin,UpdateView):
     model = User
     form_class = UserUpdateForm
-    success_url = reverse_lazy('accounts:home')
+    success_url = reverse_lazy('matches:home')
     template_name = 'accounts/user_update.html'
 
     def get_object(self):

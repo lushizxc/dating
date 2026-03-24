@@ -15,21 +15,21 @@
 
             <div class="card-body">
                 <h5 class="card-title fw-bold">{{ user.first_name }} {{ user.last_name }}</h5>
-                <p class="card-text small">{{ user.bio|truncatechars:100 }}</p>
+                <p class="card-text small">{{ user.bio }}</p>
                 <p class="card-text">Возраст: {{ user.age }}</p>
-                <p class="card-text ">{{ user.new_city.name }}</p>
+                <p class="card-text ">{{ user.city.name }}</p>
 
 
             </div>
 
             <div class="card-footer d-flex justify-content-around bg-transparent border-0 pb-3">
-                <form action="{% url 'accounts:match' user.id %}" method="post">
+                <form action="{% url 'matches:match' user.id %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="skip">
                     <button type="submit" class="btn btn-outline-secondary btn-lg">✖</button>
                 </form>
 
-                <form action="{% url 'accounts:match' user.id %}" method="post">
+                <form action="{% url 'matches:match' user.id %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="like">
                     <button type="submit" class="btn btn-danger btn-lg">❤</button>

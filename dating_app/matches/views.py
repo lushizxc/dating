@@ -14,25 +14,22 @@ class FeedView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         user = self.request.user
-        if self.request.user.is_authenticated:
-            user_pref = self.request.user.interested_in
-            queryset = User.objects.all()
-            swiped_users = Match.objects.filter(user_from = self.request.user).values_list('user_to',flat=True)
-            queryset = queryset.exclude(id__in = swiped_users).exclude(id = self.request.user.id)
+        user_pref = self.request.user.interested_in
+        queryset = User.objects.all()
+        swiped_users = Match.objects.filter(user_from = self.request.user).values_list('user_to',flat=True)
+        queryset = queryset.exclude(id__in = swiped_users).exclude(id = self.request.user.id)
 
-            queryset = queryset.annotate(
-                priority = Case(
-                When(new_city=user.new_city,then=Value(1)),
-                default=Value(2),
-                output_field = IntegerField()
+        queryset = queryset.annotate(
+            priority = Case(
+    When(city=user.city,then=Value(1)),
+            default=Value(2),
+            output_field = IntegerField()
             ))
 
-            if user_pref != "A":
-                queryset = queryset.filter(gender = user_pref)
+        if user_pref != "A":
+            queryset = queryset.filter(gender = user_pref)
 
-            return queryset.order_by('priority','?')
-        else:
-            return User.objects.all()
+        return queryset.order_by('priority','?')[:15]
 
 class MatchView(LoginRequiredMixin,View):
     def post(self,request,*args,**kwargs):

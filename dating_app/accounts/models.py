@@ -31,7 +31,7 @@ class User(AbstractUser):
     interested_in = models.CharField(max_length=1,choices=Interstedin.choices,default=Interstedin.ALL)
     last_seen = models.DateTimeField(blank = True,null = True)
 
-    REQUIRED_FIELDS = ['city','date_of_birth']
+    REQUIRED_FIELDS = ['date_of_birth']
 
     @property
     def age(self):

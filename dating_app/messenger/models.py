@@ -1,6 +1,6 @@
 from django.db import models
 
-from accounts.forms import User
+from accounts.models import User
 
 
 class Message(models.Model):

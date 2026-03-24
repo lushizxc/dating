@@ -26,5 +26,15 @@
     "fields": {
       "name": "Таллинн"
     }
+  },
+    {
+    "model": "accounts.city",
+    "pk": 5,
+    "fields": {
+      "name": "Токио"
+    }
   }
+
+
 ]
+
