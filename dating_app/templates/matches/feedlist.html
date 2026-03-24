@@ -17,7 +17,7 @@
                 <h5 class="card-title fw-bold">{{ user.first_name }} {{ user.last_name }}</h5>
                 <p class="card-text small">{{ user.bio|truncatechars:100 }}</p>
                 <p class="card-text">Возраст: {{ user.age }}</p>
-                <p class="card-text ">{{ user.city }}</p>
+                <p class="card-text ">{{ user.new_city.name }}</p>
 
 
             </div>
