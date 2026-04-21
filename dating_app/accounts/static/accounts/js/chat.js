@@ -12,26 +12,41 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     scrollToBottom();
 
-    chatForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        fetch(chatUrl, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            chatForm.reset();
-            appendMessage(data, true);
-        })
-        .catch(error => console.error('Ошибка отправки:', error));
+chatForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const textInput = this.querySelector('[name="text"]').value.trim();
+    const imageInput = this.querySelector('[name="image"]').files.length;
+
+    if (!textInput && imageInput === 0) {
+        return;
+    }
+
+    const formData = new FormData(this);
+    fetch(chatUrl, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Ошибка отправки');
+        }
+        return data;
+    })
+    .then(data => {
+        chatForm.reset();
+        appendMessage(data, true);
+    })
+    .catch(error => {
+        console.error('Ошибка:', error.message);
     });
+});
 
     function appendMessage(data, isMe) {
-        // Убираем блок "История пуста", если это первое сообщение
         const emptyMsg = document.getElementById('empty-chat-msg');
         if (emptyMsg) emptyMsg.remove();
 
@@ -39,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const bgClass = isMe ? 'bg-danger text-white' : 'bg-secondary text-white';
         const imageHtml = data.image_url ? `<img src="${data.image_url}" class="img-fluid mb-2" style="max-height: 250px; width: auto; clip-path: polygon(2% 2%, 98% 0%, 100% 98%, 0% 100%);">` : '';
 
-        // ВЕРНУЛИ РВАНЫЙ СТИЛЬ СЮДА ТОЖЕ
         const html = `
             <div class="message-box w-100 d-flex ${alignClass} mb-3" data-id="${data.id}">
                 <div class="p-3 shadow-sm ${bgClass}" style="max-width: 75%; position: relative; clip-path: polygon(0 5%, 100% 0, 98% 95%, 2% 100%);">
