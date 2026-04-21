@@ -7,31 +7,31 @@
 
         <div class="card-header d-flex justify-content-between align-items-center bg-black p-3" style="border-bottom: 2px solid #d00000;">
             <div class="d-flex align-items-center">
-                {% if user.avatar %}
-                    <img src="{{ user.avatar.url }}" class="rounded-circle me-3 border border-danger" style="width: 50px; height: 50px; object-fit: cover;">
+                {% if partner.avatar %}
+                    <img src="{{ partner.avatar.url }}" class="rounded-circle me-3 border border-danger" style="width: 50px; height: 50px; object-fit: cover;">
                 {% else %}
                     <div class="rounded-circle me-3 border border-danger bg-dark d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;"><span class="text-white">👤</span></div>
                 {% endif %}
                 <div>
-                    <h5 class="mb-0 text-white fw-bold"> {{ user.username|upper }}</h5>
-                    {% if user.is_online %}
+                    <h5 class="mb-0 text-white fw-bold"> {{ partner.username|upper }}</h5>
+                    {% if partner.is_online %}
                         <small style="color: #00ff00; font-weight: bold;">● Онлайн</small>
                     {% else %}
-                        <small class="text-light">Был(а): {{ user.last_seen|timesince }} назад</small>
+                        <small class="text-light">Был(а): {{ partner.last_seen|timesince }} назад</small>
                     {% endif %}
                 </div>
             </div>
 
-            <form action="{% url 'matches:unmatch' user.id %}" method="POST" class="m-0">
-                {% csrf_token %}
+        <form action="{% url 'matches:unmatch' partner.id %}" method="POST" class="m-0">
+            {% csrf_token %}
                 <button type="submit" class="btn btn-outline-secondary btn-sm" onclick="return confirm('Разорвать мэтч навсегда?')">
                     Анмэтч 💔
                 </button>
             </form>
         </div>
 
-        <div id="chat-window" class="card-body" data-current-user="{{ request.user.username }}" data-chat-url="{% url 'messenger:chat' user.id %}"
-             style="height: 55vh; overflow-y: auto; background-color: #0f0f0f; padding: 1.5rem;">
+    <div id="chat-window" class="card-body" data-current-user="{{ request.user.username }}" data-chat-url="{% url 'messenger:chat' partner.id %}"
+         style="height: 55vh; overflow-y: auto; background-color: #0f0f0f; padding: 1.5rem;">
 
             {% for msg in chat_messages %}
             <div class="message-box w-100 d-flex {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %} mb-3" data-id="{{ msg.id }}">
