@@ -1,18 +1,24 @@
-<!DOCTYPE html>
 {% extends 'base.html' %}
 {% block content %}
-<html>
-<head>
-    <title>Вход</title>
-</head>
-<body>
-    <h2>Войдите в систему</h2>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-lg p-4" style="border-top: 4px solid #d00000;">
+            <h2 class="text-center text-white mb-4 fw-bold text-uppercase">Вход в систему</h2>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Войти</button>
-    </form>
-</body>
-</html>
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+
+                <button type="submit" class="btn btn-danger w-100 py-2 fw-bold text-uppercase mt-3">Войти</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <small class="text-danger text-decoration-none">Еще нет аккаунта? <a href="{% url 'accounts:registration' %}" class="text-danger text-decoration-none">Зарегистрируйся</a></small>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

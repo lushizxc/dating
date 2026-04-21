@@ -16,3 +16,6 @@ class Match(models.Model):
 
     class Meta:
         unique_together = (('user_from','user_to'),)
+
+    def __str__(self):
+        return f'{self.user_from} reacted to {self.user_to}'

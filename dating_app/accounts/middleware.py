@@ -1,4 +1,5 @@
 from django.utils import timezone
+from datetime import timedelta
 
 class UpdateLastSeenMiddleware:
     def __init__(self, get_response):
@@ -8,7 +9,10 @@ class UpdateLastSeenMiddleware:
         response = self.get_response(request)
 
         if request.user.is_authenticated:
-            request.user.last_seen = timezone.now()
-            request.user.save(update_fields=['last_seen'])
+            now = timezone.now()
+
+            if not request.user.last_seen or (now - request.user.last_seen) > timedelta(minutes=1):
+                request.user.last_seen = now
+                request.user.save(update_fields=['last_seen'])
 
         return response

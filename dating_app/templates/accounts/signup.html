@@ -1,20 +1,25 @@
-
-<!DOCTYPE html>
 {% extends 'base.html' %}
 {% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg p-4" style="border-top: 4px solid #d00000;">
+            <h2 class="text-center text-white mb-4 fw-bold text-uppercase">Регистрация</h2>
+            <p class="text-center text-muted small mb-4">Присоединяйся к нашему закрытому клубу</p>
 
-<html>
-<head>
-    <title>Регестарция в Сайт для знакомст абсолютно не для фембоев</title>
-</head>
-<body>
-    <h2>Регестрация</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Зарегестрироваться</button>
-    </form>
-</body>
-</html>
+                <div class="form-group mb-4">
+                    {{ form.as_p }}
+                </div>
+
+                <button type="submit" class="btn btn-danger w-100 py-3 fw-bold text-uppercase fs-5">Зарегистрироваться</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <small class="text-danger text-decoration-none">Уже с нами? <a href="{% url 'accounts:login' %}" class="text-danger text-decoration-none">Войти</a></small>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

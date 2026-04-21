@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'matches',
     'messenger',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

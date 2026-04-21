@@ -1,42 +1,52 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center mt-2">
     {% for user in users %}
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 text-center shadow">
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 text-center shadow-lg" style="transition: transform 0.3s; border-bottom: 3px solid #333;">
+
             {% if user.avatar %}
-                <img src="{{ user.avatar.url }}" class="card-img-top" alt="{{ user.username }}" style="height: 300px; object-fit: cover;">
+                <img src="{{ user.avatar.url }}" class="card-img-top" alt="{{ user.username }}" style="height: 350px; object-fit: cover;">
             {% else %}
-                <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 300px;">
-                    <span class="text-white-50">Нет фото</span>
+                <div class="bg-dark d-flex flex-column align-items-center justify-content-center border-bottom border-secondary" style="height: 350px;">
+                    <span class="fs-1">👤</span>
+                    <span class="text-muted mt-2">Нет фото</span>
                 </div>
             {% endif %}
 
-            <div class="card-body">
-                <h5 class="card-title fw-bold">{{ user.first_name }} {{ user.last_name }}</h5>
-                <p class="card-text small">{{ user.bio }}</p>
-                <p class="card-text">Возраст: {{ user.age }}</p>
-                <p class="card-text ">{{ user.city.name }}</p>
+            <div class="card-body bg-dark text-start position-relative">
+                <h4 class="card-title fw-bold text-white mb-1">
+                    {{ user.first_name|default:user.username }} {{ user.last_name }} <span class="text-danger">{{ user.age }}</span>
+                </h4>
 
+                <p class="text-secondary small mb-3">📍 {{ user.city.name|default:"Город не указан" }}</p>
 
+                {% if user.bio %}
+                    <p class="card-text text-light" style="font-size: 0.95rem;">"{{ user.bio }}"</p>
+                {% endif %}
             </div>
 
-            <div class="card-footer d-flex justify-content-around bg-transparent border-0 pb-3">
-                <form action="{% url 'matches:match' user.id %}" method="post">
+            <div class="card-footer d-flex justify-content-around bg-dark border-top border-secondary p-3">
+                <form action="{% url 'matches:match' user.id %}" method="post" class="w-50 pe-2">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="skip">
-                    <button type="submit" class="btn btn-outline-secondary btn-lg">✖</button>
+                    <button type="submit" class="btn btn-outline-secondary w-100 fs-4 py-2" style="border-radius: 15px;">✖</button>
                 </form>
 
-                <form action="{% url 'matches:match' user.id %}" method="post">
+                <form action="{% url 'matches:match' user.id %}" method="post" class="w-50 ps-2">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="like">
-                    <button type="submit" class="btn btn-danger btn-lg">❤</button>
+                    <button type="submit" class="btn btn-danger w-100 fs-4 py-2" style="border-radius: 15px;">❤</button>
                 </form>
             </div>
         </div>
     </div>
-    {% endfor %}
+        {% empty %}
+    <div class="col-12 text-center mt-5">
+        <h2 class="text-white fw-bold">Рядом никого нет...</h2>
+        <p class="text-light">Попробуй зайти позже или измени настройки поиска.</p>
+    </div>
 </div>
+{% endfor %}
 {% endblock %}

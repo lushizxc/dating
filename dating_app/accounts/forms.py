@@ -16,8 +16,10 @@ class SignUpForm(UserCreationForm):
             'city': forms.Select(attrs={
                 'class': 'form-select bg-dark text-light border-danger'
             }),
+            'date_of_birth': forms.DateInput(attrs={
+                'type': 'date'
+            })
         }
-
 
 
 class UserUpdateForm(ModelForm):
@@ -26,8 +28,13 @@ class UserUpdateForm(ModelForm):
         model = User
         fields = ['first_name','last_name','username','city','date_of_birth','avatar','gender','bio','interested_in']
 
+
+
         widgets = {
-            'avatar': forms.FileInput(),
             'city': forms.Select(attrs={
                 'class': 'form-select bg-dark text-light border-danger'
-        })}
+            }),
+            'date_of_birth': forms.DateInput(attrs={
+                'type': 'date'
+            })
+        }
